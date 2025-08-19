@@ -1,0 +1,231 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import 'main_screen.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      // ✅ Validation ناجحة
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      print('Login attempt with: Email=$email, Password=$password');
+
+
+      context.go(MainScreen.id);
+    } else {
+      // ❌ Validation فشلت
+      print('Form is invalid');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white, // Ensure the background is white
+      body: Center(
+        child: SingleChildScrollView(
+          // Allows scrolling if the keyboard covers content
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                // ShopSmart Logo/Icon
+                Container(
+                  height: 218,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/logo.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+
+                // const SizedBox(height: 24.0),
+                const Text(
+                  'ShopSmart',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+                // Space between app name and email field
+
+                // Email Input Field
+                TextFormField(
+                  validator: (email) {
+
+                    if (email == null || email.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                    if (!emailRegex.hasMatch(email)) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    // Hint text color
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none, // No visible border
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    // Light grey background as in image
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 16.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Password Input Field
+                TextFormField(
+                  validator: (password) {
+                    if (password == null || password.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (password.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+
+                    return null;
+                  },
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible, // Toggles password visibility
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    // Hint text color
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide.none, // No visible border
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    // Light grey background
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 16.0,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey, // Eye icon color
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+
+                // Login Button
+                ElevatedButton(
+                  onPressed: (){
+                    if (_formKey.currentState!.validate()) {
+
+                      final email = _emailController.text.trim();
+                      final password = _passwordController.text;
+                      print('Login attempt with: Email=$email, Password=$password');
+
+                      context.push(MainScreen.id);
+                    } else {
+                      // ❌ Validation فشلت
+                      print('Form is invalid');
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Button background color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    elevation: 0, // No shadow for the button
+                  ),
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Text color
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Forgot Password? Link
+                TextButton(
+                  onPressed: () {
+                    // Implement forgot password navigation or logic
+                    print('Forgot Password? tapped');
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.grey[600], // Grey color for the link
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+
+                // Sign Up Link
+                TextButton(
+                  onPressed: () {
+                    // Implement sign up navigation or logic
+                    print('Sign Up tapped');
+                  },
+                  child: Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.grey[600], // Grey color for the link
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
